@@ -25,11 +25,10 @@ export default function AddTraining2(props) {
 
     const handleInputChange = (event) => {
         setTraining({ ...training, [event.target.name]: event.target.value })
-        console.log(training.customer)
-
     }
 
     const AddTraining = () => {
+
         const date = setDate(training.date, training.time)
         training.datestamp = date;
         props.saveTraining(training)
@@ -44,18 +43,15 @@ export default function AddTraining2(props) {
     }
 
     const setDate = (day, time) => {
-        //console.log("day + time = " + day + " " + time);
-
-        const datestr = day + " " + time;
+        
+        const datestr = day + ","+ time;
         if (!moment(datestr).isValid()) {console.log("ERROR ERRO ERROR ERROR REROROR ERROR")}
-        let date = moment(datestr).toISOString(true);
-        //let date = new Date(datestr);
-        // eslint-disable-next-line no-extend-native
-        //Date.prototype.toJSON = function(){ return moment(date.toISOString(true)).format(); }
-        let datestring = JSON.stringify(date);
-        console.log("PÄIVÄMÄÄRÄ: " + date);
-        console.log("PÄIVÄMÄÄRÄ DATESTRINGINA: " + datestring)
-        return datestring;
+        
+        let date = new Date(datestr);
+        //eslint-disable-next-line no-extend-native
+        Date.prototype.toJSON = function(){ return moment(date.toISOString()).format(); }
+        let datestring = JSON.stringify(date)
+        return datestring
     }
 
     return (

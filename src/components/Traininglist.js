@@ -3,112 +3,90 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 import moment from 'moment';
 import { Button } from '@material-ui/core';
-import AddTraining from "./AddTraining";
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import EditTraining from './EditTraining';
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 
-moment().format();
 
-
-export default function Traininglist() {
+export default function Traininglist2(props) {
 
     const [trainings, setTrainings] = useState([]);
     const [open, setOpen] = React.useState(false);
-    const [link, setLink] = React.useState('');
+    const [deleteID, setDeleteId] = React.useState('');
 
     useEffect(() => fetchData(), [])
 
     const fetchData = () => {
-        fetch('https://customerrest.herokuapp.com/api/trainings')
+        fetch('https://customerrest.herokuapp.com/gettrainings')
             .then(response => response.json())
-            .then(data => setTrainings(data.content))
-
+            .then(data => setTrainings(data))
+            .catch(error => console.log("ERRORERROR: !!!:" + error))
     }
 
-    const saveTraining = (training) => {
-        fetch('https://customerrest.herokuapp.com/api/trainings', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify(training)
-        })
-            .then(res => fetchData())
-            .catch(err => console.error(err))
-    }
 
     const deleteTraining = () => {
-        fetch(link, { method: 'DELETE' })
+        fetch('https://customerrest.herokuapp.com/api/trainings/' + deleteID,
+            { method: 'DELETE' })
             .then(res => fetchData())
             .catch(err => console.error(err))
         handleClose()
     }
 
-    const handleClickOpen = () => {
+    const handleClickOpen = (props) => {
         setOpen(true);
-    }
+    };
 
     const handleClose = () => {
         setOpen(false);
-    }
+    };
 
-    const makeDeleteLink = (value) => {
-        setLink(value)
-        handleClickOpen()
-
-    }
-
-
-    const updateTraining = (training, link) => {
-        fetch(link, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(training)
-        })
-            .then(res => fetchData())
-            .catch(err => console.error(err))
-
+    const makeDeleteId =(value) => {
+        setDeleteId(value);
+        handleClickOpen();
     }
 
 
     const columns = [
         {
+            Header: "Activity",
+            accessor: 'activity'
+        },
+        {
             Header: "Time",
             accessor: 'date',
             Cell: row => moment(row.value).format('lll')
         },
-        {
-            Header: "Activity",
-            accessor: 'activity'
-        },
+
         {
             Header: 'Duration (min)',
             accessor: 'duration'
         },
         {
-            sortable: false,
-            filterable: false,
-            width: 100,
-            Cell: row => <EditTraining updateTraining={updateTraining} training={row.original}></EditTraining>
-
+            Header: 'Customer lastname',
+            accessor: 'customer.lastname', 
+            Cell: row => <div>{row.value}</div>
+            
         },
+        {
+            Header: 'Customer firstname',
+            accessor: 'customer.firstname', 
+            Cell: row => <div>{row.value}</div>      
+        },
+       
         {
             sortable: false,
             filterable: false,
+            accessor: 'id',
             width: 100,
-            accessor: 'links[0].href',
-            Cell: row => <Button size="small" color="secondary" onClick={() => makeDeleteLink(row.value)}><DeleteForeverIcon /></Button>
+            Cell: row => <Button color="secondary" onClick={() => makeDeleteId(row.value)}><DeleteForeverIcon /></Button>
 
-        }
+
+        },
     ]
 
     return (
@@ -132,8 +110,6 @@ export default function Traininglist() {
                 </DialogActions>
             </Dialog>
 
-
-            <AddTraining saveTraining={saveTraining}></AddTraining>
             <h1>Trainings:</h1>
             <ReactTable filterable={true} data={trainings} columns={columns}></ReactTable>
         </div>

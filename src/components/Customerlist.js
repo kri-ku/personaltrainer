@@ -4,7 +4,6 @@ import 'react-table/react-table.css';
 import { Button } from '@material-ui/core';
 import AddCustomer from './AddCustomer';
 import EditCustomer from "./EditCustomer";
-//import moment from 'moment';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -13,11 +12,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-//import { Link } from 'react-router-dom';
-//import { BrowserRouter, Switch, Link, Route } from 'react-router-dom';
 import Listcustomerstrainings from './Listcustomerstrainings';
 import Popup from "reactjs-popup";
-import AddTraining2 from './AddTraining2';
+import AddTraining from './AddTraining';
 
 
 
@@ -26,9 +23,6 @@ export default function Customerlist() {
     const [customers, setCustomers] = useState([]);
     const [open, setOpen] = React.useState(false);
     const [link, setLink] = React.useState('');
-    //???????
-    //const [customer, setCustomer] = React.useState({ firstname: '', lastname: 'koira' })
-
 
     useEffect(() => fetchData(), [])
 
@@ -60,19 +54,14 @@ export default function Customerlist() {
 
     const handleClickOpen = () => {
         setOpen(true);
-    };
+    }
 
     const handleClose = () => {
         setOpen(false);
-    };
+    }
 
     const makeLink = (value) => {
         setLink(value)
-        //tässä vähä häikkää
-       /* fetch(link)
-            .then(response => response.json())
-            .then(data => setCustomer(data.content))
-        console.log(customer)*/
         handleClickOpen()
     }
 
@@ -90,21 +79,17 @@ export default function Customerlist() {
     }
 
 
-
     const saveTraining = (training) => {
 
-        //let stringdate = "2020-12-12T09:12:00.000+02:00"
-        
         //var raw = JSON.stringify({"date":"2020-12-12T07:00:00.000Z","activity":"kissa","duration":"50","customer":"https://localhost:8080/api/customers/2"});
-        let data = JSON.stringify({"date:":`${training.datestamp}`,"activity": `${training.activity}`, "duration": `${training.duration}`, "customer": `${training.customer}` });
-         //
-         //"date": "2020-12-12T09:12:00.000+02:00"
-      
+        //let aika = `${training.date}T${training.time}:00.000+0000`
+        let data = JSON.stringify({ "date:": `${training.datestamp}`, "activity": `${training.activity}`, "duration": `${training.duration}`, "customer": `${training.customer}` });
+        console.log(JSON.stringify(data, null, 4))
+
         let requestOptions = {
             method: 'POST',
             headers: { 'Content-type': 'application/json' },
             body: data,
-
             redirect: 'follow'
         };
 
@@ -114,7 +99,6 @@ export default function Customerlist() {
             .catch(error => console.log('error', error));
 
     }
-
 
     const columns = [
         {
@@ -129,7 +113,7 @@ export default function Customerlist() {
             Header: 'City',
             accessor: 'city'
         },
-        
+
         {
             Header: 'Streetaddress',
             accessor: 'streetaddress'
@@ -172,7 +156,7 @@ export default function Customerlist() {
             sortable: false,
             filterable: false,
             accessor: 'links[0].href',
-            Cell: row => <AddTraining2 customer={row.value} saveTraining={saveTraining}></AddTraining2>
+            Cell: row => <AddTraining customer={row.value} saveTraining={saveTraining}></AddTraining>
 
         },
         {
@@ -199,7 +183,7 @@ export default function Customerlist() {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">"Are you sure you want to delete this client?"</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Are you sure you want to delete this client?</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         After this, all information will be lost.
